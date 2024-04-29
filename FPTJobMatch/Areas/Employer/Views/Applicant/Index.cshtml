@@ -1,0 +1,177 @@
+﻿@using FPT.Utility
+@model ApplicantPageVM
+
+@{
+    ViewData["Title"] = "Applicants";
+    string jobId = Context.Request.Query["jobId"];
+}
+
+<div class="px-6 md:px-16">
+    <!-- Searching box -->
+    <div class="rounded-xl p-5 sm:p-10 bg-cover bg-fixed text-center" style="background-image: linear-gradient(to bottom, rgba(2,79,160), transparent), url(/images/system/fptdiscussion.jpg);">
+        <div class="w-full sm:w-11/12 lg:w-4/5 xl:w-3/4 mx-auto">
+            <p class="font-semibold text-3xl text-white mb-2"><span class="text-MyOrange">Success </span>Begins Here</p>
+            <div class="mt-5 flex flex-wrap gap-4 text-white items-center justify-center text-sm font-semibold tracking-widest">
+                <a asp-area="Employer" asp-controller="Home" asp-action="Index" class="hover:underline">HOME</a>
+                <i class="fa-solid fa-angle-right"></i>
+                <a asp-area="Employer" asp-controller="Home" asp-action="Index" class="hover:underline">@Model.JobTitle.ToUpper()</a>
+                <i class="fa-solid fa-angle-right"></i>
+                <a class="text-MyPaleGrey">CANDIDATE LIST</a>
+            </div>
+            <input type="number" id="job_id" value="@Model.JobId" hidden />
+        </div>
+    </div>
+
+    <!-- Candidate List -->
+    <div class="min-h-screen overflow-x-auto">
+        <div class="flex gap-3 flex-wrap justify-between items-center mt-6">
+            <div>
+                <a asp-controller="Home" asp-action="Index" class="flex gap-1 items-center hover:underline text-MyBlue hover:cursor-pointer text-sm font-semibold">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <p>Back</p>
+                </a>
+                <p class="font-medium text-xl text-MyBlue">Candidate List</p>
+            </div>
+            <form asp-controller="Applicant" asp-action="Index" method="get" id="form_filter" class="flex flex-wrap gap-3">
+                <input type="text" hidden name="jobId" value="@jobId" />
+
+                <!-- Hidden input fields to store selected status and sorting -->
+                <input type="hidden" id="selectedStatus" name="status" value="" />
+                <input type="hidden" id="selectedSortType" name="sortType" value="" />
+
+                <!-- Status dropdown -->
+                <div class="relative" id="dropdown_btn">
+                    <div class="hover:cursor-pointer text-sm flex items-center justify-between w-36 py-3 px-4 border border-MyBlue rounded-md">
+                        <p id="dropdown_status">Status</p>
+                        <i class="text-MyDarkGrey fa-solid fa-angle-down"></i>
+                    </div>
+                    <div id="dropdown_list" class="hidden w-36 absolute text-sm">
+                        <button type="button" class="status-option mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer" data-value="Pending">Pending</button>
+                        <button type="button" class="status-option mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer" data-value="Responded">Responded</button>
+                        <button type="button" class="status-option mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer" data-value="">All</button>
+                    </div>
+                </div>
+
+                <!-- Sorting dropdown -->
+                <div class="relative" id="dropdown_btn">
+                    <div class="hover:cursor-pointer text-sm flex items-center justify-between w-36 py-3 px-4 border border-MyBlue rounded-md">
+                        <p id="dropdown_sort">Sorting</p>
+                        <i class="text-MyDarkGrey fa-solid fa-angle-down"></i>
+                    </div>
+                    <div id="dropdown_list" class="hidden w-36 absolute text-sm">
+                        <button type="button" class="sort-option mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer" data-value="NewestFirst">Newest First</button>
+                        <button type="button" class="sort-option mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer" data-value="OldestFirst">Oldest First</button>
+                    </div>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" id="applyFiltersButton" class="text-sm btnPaleBlue hover:text-white hover:cursor-pointer px-3 py-2">Filter</button>
+            </form>
+        </div>
+
+
+        <table class="w-full mt-5">
+            <thead class="text-left text-MyBlue bg-MyPaleBlue">
+                <tr class="">
+                    <th class="py-3 px-8 rounded-tl-md">Candidate</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Date Applied</th>
+                    <th class="py-3">Date Response</th>
+                    <th class="py-3 px-5 rounded-tr-md text-center">Application</th>
+                </tr>
+            </thead>
+            <tbody class="pt-3">
+                @foreach (var applicant in Model.ApplicantList)
+                {
+                    <tr class="border border-MyPaleBlue">
+                        <td class="py-5 px-8 min-w-56">
+                            <div class="flex gap-3 items-center">
+                                <img src="~/images/avatar/@((applicant.JobSeeker?.Avatar == null) ? "maleavt.jpg" : applicant.JobSeeker.Avatar)" alt="" class="w-14 h-14 rounded-full object-cover p-1 border border-MyDarkGrey">
+                                <div class="break-all">
+                                    <a asp-controller="Applicant" asp-action="ApplicantDetail" asp-route-applicantId="@applicant.JobSeekerId" target="_blank" class="font-semibold text-lg hover:underline hover:text-MyBlue">@applicant.JobSeeker?.Name</a>
+                                    <p class="text-sm text-MyDarkGrey">@applicant.JobSeeker?.Email</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-5 pr-3">
+                            <div class="flex gap-2 items-center">
+                                <i class="fa-solid fa-circle text-xs @(applicant.CVStatus == SD.StatusPending ? "text-MyOrange" : "text-MyGreen")"></i>
+                                <p>@(applicant.CVStatus == SD.StatusPending ? "Pending" : "Responded")</p>
+                            </div>
+                        </td>
+                        <td class="py-5 pr-3">@applicant.DateSubmitted.ToString("MMM dd, yyyy")</td>
+                        <td class="py-5 pr-3">@((applicant.DateResponded == null) ? "Not Yet" : applicant.DateResponded.Value.ToString("MMM dd, yyyy"))</td>
+                        <td data-id="@applicant.JobSeekerId" class="view_cvFormSubmitted py-5 pr-3 text-MyBlue hover:underline text-center hover:cursor-pointer">View</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CV Form -->
+    <div id="cvFormSubmitted" class="hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+        <div class="bg-white mx-auto w-11/12 md:w-3/4 xl:w-1/2 h-fit rounded-lg mt-14">
+            <div class="flex gap-4 items-center justify-between p-3">
+                <p class="text-MyBlue text-lg font-semibold">Review Application</p>
+                <button for="" id="close_cvFormSubmitted" class="text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyBlue"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+            <div class="px-5 pb-4">
+                <input type="text" id="applicantCV_id" />
+                <div class="py-3 text-center">
+                    <p class="font-medium">Review your application</p>
+                    <p class="text-sm text-MyDarkGrey">The employer will also receive a copy of your profile</p>
+                </div>
+                <div class="h-0.5 w-full bg-MyPaleGrey"></div>
+                <div class="py-4">
+                    <p class="font-medium">General Info</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <div class="flex flex-col gap-4 mt-3">
+                        <div class="flex flex-wrap sm:flex-nowrap gap-4">
+                            <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3">
+                                <p class="text-xs text-MyDarkGrey">Your name <span class="text-red-600">*</span></p>
+                                <input id="applicant_name" type="text" disabled class="w-full outline-none text-sm font-medium" value="">
+                            </div>
+                            <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3">
+                                <p class="text-xs text-MyDarkGrey">Your phone number <span class="text-red-600">*</span></p>
+                                <input id="applicant_phone" type="text" disabled class="w-full outline-none text-sm font-medium" value="">
+                            </div>
+                        </div>
+                        <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3">
+                            <p class="text-xs text-MyDarkGrey">Your gmail <span class="text-red-600">*</span></p>
+                            <input id="applicant_email" type="text" disabled class="w-full outline-none text-sm font-medium" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+                <div class="py-4">
+                    <p class="font-medium">Resume</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <a href="" target="_blank" id="applicant_cv" class="font-semibold flex gap-1 items-center mt-3 text-MyBlue text-sm">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span class="underline"> Download Resume</span>
+                    </a>
+                </div>
+                <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+                <form id="responseMessage_form" asp-controller="Applicant" asp-action="ResponseCV" method="post">
+                    <div class="pt-4">
+                        <p class="font-medium">Response</p>
+                        <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                        <input name="curJobId" value="@Model.JobId" hidden />
+                        <input name="applicantId" id="applicant_id" hidden />
+                        <input name="cvId" id="CV_id" hidden />
+                        <textarea name="responseMessage" id="applicant_response" rows="5" class="resize-none p-2 outline-MyBlue text-sm w-full border border-MyBlue rounded-md mt-3"></textarea>
+                    </div>
+                    <p id="responseMessage_errorMessage" class="text-center text-red-600 my-2 text-sm"></p>
+                    <button type="submit" class="border border-MyBlue bg-MyPaleBlue rounded-md hover:bg-MyBlue hover:text-white w-full py-3 text-sm">Response</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/employer/applicant.js" asp-append-version="true"></script>
+    <script src="~/ajax/employer/applicant.js" asp-append-version="true"></script>
+}

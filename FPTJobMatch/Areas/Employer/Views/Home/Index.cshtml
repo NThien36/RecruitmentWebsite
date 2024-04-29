@@ -1,0 +1,263 @@
+﻿@using FPT.Utility.Helpers
+@model JobVM
+
+@{
+    ViewData["Title"] = "Upload Jobs";
+}
+
+<div class="px-6 md:px-16">
+    <!-- Searching box -->
+    <div class="rounded-xl p-5 sm:p-10 bg-contain bg-fixed text-center" style="background-image: linear-gradient(to bottom, rgba(2,79,160), transparent), url(/images/system/bg-reg.png);">
+        <div class="w-full sm:w-11/12 lg:w-4/5 xl:w-3/4 mx-auto">
+            <p class="font-semibold text-3xl text-white mb-2"><span class="text-MyOrange">Job Management </span>Your Key to Success!</p>
+            </p>
+            <form action="" class="mt-7">
+                <div class="flex flex-wrap gap-5 mt-3 mx-auto justify-center">
+                    <div class="relative" id="jobType_select">
+                        <div class="bg-white hover:cursor-pointer text-sm flex items-center justify-between w-36 py-3 px-4 rounded-lg">
+                            <p>Job Type</p>
+                            <i class="text-MyDarkGrey fa-solid fa-angle-down"></i>
+                        </div>
+                        <ul id="jobType_options" class="hidden z-10 w-36 absolute text-sm">
+                            <li class="mt-1 hover:cursor-pointer">
+                                <a asp-controller="Home" asp-action="Index" asp-route-jobTypeId="" class="block rounded-md border border-MyOrange py-3 px-4 bg-MyPaleOrange hover:bg-MyOrange hover:text-white">All Types</a>
+                            </li>
+                            @foreach (var jobType in Model.JobTypeList)
+                            {
+                                <li class="mt-1 hover:cursor-pointer">
+                                    <a asp-controller="Home" asp-action="Index" asp-route-jobTypeId="@jobType.Value" class="block rounded-md border border-MyOrange py-3 px-4 bg-MyPaleOrange hover:bg-MyOrange hover:text-white">@jobType.Text</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <label for="" id="create_employerCVForm" class="text-sm btn px-6 flex items-center hover:cursor-pointer">
+                        Upload Job
+                    </label>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <!-- Jobs list -->
+    <div class="min-h-screen grid grid-cols-3 gap-2 sm:gap-5 mt-8">
+        <div id="leftTab" class="col-span-1 flex flex-col gap-2">
+                @foreach (var job in Model.JobList)
+                {
+                    <div data-id="@job.Id" class="job_item rounded-l-md border-2 border-MyPaleGrey p-3 sm:p-6 hover:bg-MyPaleOrange hover:border-MyOrange">
+                        <div>
+                            <p class="font-semibold text-xl">@job.Title</p>
+                            <p class="text-sm text-MyDarkGrey mt-1">Posted @DateTimeHelper.GetTimeAgoString(job.CreatedAt)</p>
+                        </div>
+                        <div class="mt-4 flex gap-2 flex-col">
+                            <div class="flex gap-2 items-center">
+                                <i class="fa-solid fa-earth-asia text-MyDarkGrey text-lg"></i>
+                                <p class="text-xs">@job.Address</p>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <i class="fa-regular fa-clock text-MyDarkGrey text-lg"></i>
+                                <p class="text-xs">@job.JobType?.Name</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.JobList.HasPreviousPage || Model.JobList.HasNextPage)
+                {
+                    var prevDisabled = !Model.JobList.HasPreviousPage ? "text-MyDarkGrey" : "";
+                    var nextDisabled = !Model.JobList.HasNextPage ? "text-MyDarkGrey" : "";
+
+                    <div class="text-sm flex justify-center gap-5 mt-3 text-MyOrange">
+                        <a asp-area="Employer" asp-controller="Home" asp-action="Index" asp-route-jobTypeId="@ViewBag.JobTypeId" asp-route-pageIndex="@(Model.JobList.PageIndex - 1)"       class="flex items-center gap-2 @prevDisabled">
+                                <i class="fa-solid fa-angle-left"></i>
+                                <p class="hover:underline">Previous</p>
+                        </a>
+                        <a asp-area="Employer" asp-controller="Home" asp-action="Index" asp-route-jobTypeId="@ViewBag.JobTypeId" asp-route-pageIndex="@(Model.JobList.PageIndex + 1)"       class="flex items-center gap-2 @nextDisabled">
+                                <p class="hover:underline">Next</p>
+                                <i class="fa-solid fa-angle-right"></i>
+                        </a>
+                    </div>
+                }
+        </div>
+        <div id="rightTab" class="col-span-2">
+            <p id="noJobClick_message" class="text-MyOrange text-lg font-medium mt-2 text-center">Please select a job from the list on the left tab</p>
+            <div id="jobDisplay_tab" class="hidden sticky top-0 h-fit rounded-md border border-MyGrey p-3 sm:p-6">
+                <div class="flex flex-wrap gap-3 justify-between bg-white">
+                    <input type="text" id="job_id" value="" hidden/>
+                    <div>
+                        <div>
+                            <p id="job_title" class="text-xl font-semibold"></p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-sm mt-4">
+                            <div id="applicantCV_new" class="border border-MyOrange bg-MyPaleOrange px-3 rounded-lg py-2"></div>
+                            <div id="applicantCV_total" class="border border-MyBlue bg-MyPaleBlue px-3 rounded-lg py-2"></div>
+                            <a id="viewApplicants_page" class="btn px-3 py-2">View Applicants</a>
+                        </div>
+                    </div>
+                    <div class="flex flex-col text-3xl">
+                        <button id="delete_employerCVFormDeleteId" class="delete_employerCVFormDelete text-MyOrange"><i class="fa-solid fa-square-xmark"></i></button>
+                    </div>
+                    <div class="h-0.5 w-full bg-MyPaleGrey mt-3"></div>
+                </div>
+                <div id="custom-scroll" class="h-job overflow-y-scroll pr-2 pt-5">
+                    <div class="text-sm flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-earth-asia text-MyGrey text-lg"></i>
+                            <p id="job_address"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-MyGrey text-lg"></i>
+                            <p id="job_deadline"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-MyGrey text-lg"></i>
+                            <p id="job_category"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-clock text-MyGrey text-lg"></i>
+                            <p id="job_type"></p>
+                        </div>
+                    </div>
+                    <div class="h-0.5 w-full bg-MyPaleGrey my-5"></div>
+                    <div>
+                        <p class="text-xl font-semibold mb-2">Job Description</p>
+                        <p id="job_description"></p>
+                    </div>
+                    <div class="h-0.5 w-full bg-MyPaleGrey my-5"></div>
+                    <div>
+                        <p class="text-xl font-semibold mb-2">Responsibilities</p>
+                        <p id="job_responsibilities"></p>
+                    </div>
+                    <div class="h-0.5 w-full bg-MyPaleGrey my-5"></div>
+                    <div>
+                        <p class="text-xl font-semibold mb-2">Your Skills and Experience</p>
+                        <p id="job_experience"></p>
+                    </div>
+                    <div class="h-0.5 w-full bg-MyPaleGrey my-5"></div>
+                    <div>
+                        <p class="text-xl font-semibold mb-2">Additional Information</p>
+                        <p id="job_additionalInfo"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Job Uploaded Form -->
+    <div id="employerCVForm" class="hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+        <div class="bg-white mx-auto w-11/12 md:w-3/4 xl:w-1/2 h-fit rounded-lg mt-14">
+            <div class="flex gap-4 items-center justify-between py-3 px-5">
+                <p class="text-MyOrange text-lg font-semibold">Creating a new job</p>
+                <button for="" id="close_employerCVForm" class="text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyOrange"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+            <form method="post" asp-controller="Home" asp-action="CreateJob" id="form_createJob" class="px-5 pb-4">
+                <div class="py-3 text-center">
+                    <p class="font-medium">Review your application</p>
+                    <p class="text-sm text-MyDarkGrey">The employee will also receive a copy of your profile</p>
+                </div>
+                <div class="h-0.5 w-full bg-MyPaleGrey"></div>
+                <div asp-validation-summary="All" class="block text-center my-3 text-red-600 text-sm"></div>
+                <div class="pb-4">
+                    <p class="font-medium">General Info</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <div class="flex flex-col gap-3 mt-3">
+                        <div class="flex flex-wrap sm:flex-nowrap gap-4">
+                            <div class="w-full border border-MyOrange rounded-sm py-2 px-3">
+                                <p class="text-sm text-MyDarkGrey">Title <span class="text-red-600">*</span></p>
+                                <input asp-for="JobUploadModel.Title" type="text" class="w-full outline-none text-sm font-medium" placeholder="Enter your full name">
+                            </div>
+                            <div class="w-full border border-MyOrange rounded-sm">
+                                <p class="px-3 pt-2 text-sm text-MyDarkGrey">Job Type <span class="text-red-600">*</span></p>
+                                <select asp-for="JobUploadModel.JobTypeId" asp-items="@Model.JobTypeList" class="custom-select px-3 pb-2 w-full outline-none text-sm font-medium">
+                                    <option disabled selected>--Select Type--</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="w-full border border-MyOrange rounded-sm py-2 px-3">
+                            <p class="text-sm text-MyDarkGrey">Address <span class="text-red-600">*</span></p>
+                            <input asp-for="JobUploadModel.Address" type="text" class="w-full outline-none text-sm font-medium" placeholder="Enter your full name">
+                        </div>
+                        <div class="w-full border border-MyOrange rounded-sm py-2 px-3">
+                            <p class="text-sm text-MyDarkGrey">Deadline</p>
+                            <input id="deadlineInput" asp-for="JobUploadModel.Deadline" type="date" class="w-full outline-none text-sm font-medium" placeholder="Enter your full name">
+                        </div>
+                        <p id="deadline_errorMessage" class="hidden text-center text-red-600 text-sm">The deadline must be greater than today's date</p>
+                        <div class="w-full border border-MyOrange rounded-sm">
+                            <p class="px-3 pt-2 text-sm text-MyDarkGrey">Job Category <span class="text-red-600">*</span></p>
+                            <select id="categoryDropdown" asp-for="JobUploadModel.CategoryId" asp-items="@Model.CategoryList" class="custom-select px-3 pb-2 w-full outline-none text-sm font-medium">
+                                <option disabled selected>--Select Category--</option>
+                                <option value="">None of these</option>
+                            </select>
+                        </div>
+                        <div class="w-full border border-MyOrange rounded-sm py-2 px-3">
+                            <p class="text-sm text-MyDarkGrey">New Category</p>
+                            <input id="newCategoryInput" disabled asp-for="JobUploadModel.Category.Name" type="text" class="w-full outline-none text-sm font-medium" placeholder="Enter your full name">
+                        </div>
+                        <p class="text-sm"><span class="text-red-600">(*)</span> Please, wait for admin checking the category</p>
+                        <p id="category_errorMessage" class="text-center text-red-600 text-sm"></p>
+                    </div>
+                </div>
+                <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+                <div class="pt-4 pb-2">
+                    <p class="font-medium">Job Description</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <textarea asp-for="JobUploadModel.Description" placeholder="sdsdsd" rows="5" class="resize-none p-2 outline-MyOrange text-sm w-full border border-MyOrange rounded-md mt-3"></textarea>
+                </div>
+                <div class="">
+                    <p class="font-medium">Responsibilities</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <textarea asp-for="JobUploadModel.Responsibility" id="" rows="5" class="resize-none p-2 outline-MyOrange text-sm w-full border border-MyOrange rounded-md mt-3"></textarea>
+                </div>
+                <div>
+                    <p class="font-medium">Skills and Experience</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <textarea asp-for="JobUploadModel.Experience" rows="5" class="resize-none p-2 outline-MyOrange text-sm w-full border border-MyOrange rounded-md mt-3"></textarea>
+                </div>
+                <div class="pt-2 pb-4">
+                    <p class="font-medium">Additional Detail</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <textarea asp-for="JobUploadModel.AdditionalDetail" id="" rows="5" class="resize-none p-2 outline-MyOrange text-sm w-full border border-MyOrange rounded-md mt-3"></textarea>
+                </div>
+                <button type="submit" class="btn w-full py-3 text-sm">Create</button>
+            </form>
+
+        </div>
+    </div>
+    <!-- Delete CV -->
+    <div id="employerCVFormDelete" class="hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+        <div class="bg-white mx-auto w-1/2 lg:w-1/4 h-fit rounded-lg mt-28">
+            <div class="flex gap-4 items-center justify-between px-5 py-3">
+                <p class="text-MyOrange text-lg font-semibold">Confirm Deletion</p>
+                <button for="" id="close_employerCVFormDelete" class="close_employerCVFormDelete text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyOrange"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+            <form asp-controller="Home" asp-action="DeleteJob" method="post" class="px-5 pt-3 pb-5">
+                <input hidden type="text" name="jobId" id="delete_employerId">
+                <p class="">Are you sure you would like to delete this job? This action cannot be undone.</p>
+                <div class="flex gap-2 justify-end mt-6">
+                    <button id="cancel_employerCVFormDelete" type="button" class="rounded-lg border border-MyOrange bg-MyPaleOrange py-2 px-5">Cancel</button>
+                    <button type="submit" class="btn py-2 px-5">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Advertisements -->
+    <div class="py-24">
+        <div class="h-80 p-12 rounded-lg bg-cover flex relative" style="background-image: linear-gradient(to right, #000000bf, transparent), url(/images/system/fptdiscussion.jpg);">
+            <div class="col-span-1 flex flex-col justify-center w-full sm:w-1/2">
+                <p class="text-MyOrange font-bold">WE ARE</p>
+                <p class="text-5xl font-semibold text-white">HIRING</p>
+                <p class="text-white">Choose from a variety of Happy Birthday ribbon designs or create your own! Shop now for custom gift giving supplies & more!</p>
+                <a href="" class="w-fit btn py-2 px-3 flex justify-center items-center text-sm mt-3"><i class="fa-solid fa-circle-check"></i><span class="ml-2">Apply Now</span></a>
+            </div>
+            <img src="~/images/system/FPT.png" alt="" class="h-14 absolute right-14 hidden sm:block">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script src="~/js/employer/home.js" asp-append-version="true"></script>
+    <script src="~/ajax/employer/home.js" asp-append-version="true"></script>
+}

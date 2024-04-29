@@ -1,0 +1,244 @@
+﻿@using FPT.Utility
+@using FPT.Utility.Helpers
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@model PaginatedList<ApplicationUser>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="px-6 md:px-16">
+
+    <!-- Searching box -->
+    <div class="rounded-xl p-5 sm:p-10 bg-contain bg-fixed text-center" style="background-image: linear-gradient(to bottom, rgba(2,79,160), transparent), url(/images/system/bg-reg.png);">
+        <div class="w-full sm:w-11/12 lg:w-4/5 xl:w-3/4 mx-auto">
+            <p class="font-semibold text-3xl text-white mb-2"><span class="text-MyOrange">The Art </span>of Administrative Excellence</p>
+            <div class="mt-5 flex flex-wrap gap-4 text-white items-center justify-center text-sm font-semibold tracking-widest">
+                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="hover:underline">HOME</a>
+                <i class="fa-solid fa-angle-right"></i>
+                <a class="text-MyPaleGrey">USER LIST</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidate List -->
+    <div class="min-h-screen pb-12">
+        <div class="flex flex-wrap justify-between items-center mt-6">
+            <div>
+                <a class="flex gap-1 items-center hover:underline text-MyBlue hover:cursor-pointer text-sm font-semibold">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <p>Back</p>
+                </a>
+                <p class="font-medium text-xl text-MyBlue">User List</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button id="open_employerFormCreated" class="btnPaleBlue text-sm py-3 px-4 ">
+                    Create Account
+                </button>
+                <form id="form_filter" asp-controller="Home" asp-action="Index" method="get" class="flex flex-wrap gap-3">
+                    <input type="hidden" id="filter_userType" name="userType" value="@ViewBag.UserType">
+                    <input type="hidden" id="filter_sortType" name="sortType" value="@ViewBag.SortType">
+                    <input type="hidden" id="filter_keyword" name="keyword" value="@ViewBag.Keyword">
+
+                    <div class="relative" id="dropdown_btn">
+                        <div class="hover:cursor-pointer text-sm flex items-center justify-between w-36 py-3 px-4 border border-MyBlue rounded-md">
+                            <p>Role</p>
+                            <i class="text-MyDarkGrey fa-solid fa-angle-down"></i>
+                        </div>
+                        <div id="dropdown_list" class="hidden w-36 absolute text-sm">
+                            <button type="button" onclick="updateUserType('Employer')" class="mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer">Employer</button>
+                            <button type="button" onclick="updateUserType('JobSeeker')" class="mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer">Job Seeker</button>
+                            <button type="button" onclick="updateUserType('')" class="mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer">All</button>
+                        </div>
+                    </div>
+                    <div class="relative" id="dropdown_btn">
+                        <div class="hover:cursor-pointer text-sm flex items-center justify-between w-36 py-3 px-4 border border-MyBlue rounded-md">
+                            <p>Sorting</p>
+                            <i class="text-MyDarkGrey fa-solid fa-angle-down"></i>
+                        </div>
+                        <div id="dropdown_list" class="hidden w-36 absolute text-sm">
+                            <button type="button" onclick="updateSortType('NewestFirst')" class="mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer">Newest First</button>
+                            <button type="button" onclick="updateSortType('OldestFirst')" class="mt-1 py-3 px-4 btnPaleBlue hover:text-white hover:cursor-pointer">Oldest First</button>
+                        </div>
+                    </div>
+                    <div class="border border-MyBlue rounded-md p-1">
+                        <div class="h-full">
+                            <input type="text" id="keywordInput" value="@ViewBag.Keyword" class="outline-none w-56 h-full px-3">
+                            <button type="submit" id="btn_submitFilter" class="bg-MyPaleBlue h-full w-10 text-MyBlue rounded-md"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        <div class="overflow-x-auto w-full">
+            <table class="w-full mt-5">
+            <thead class="text-left text-MyBlue bg-MyPaleBlue">
+                <tr class="">
+                    <th class="py-3 pl-9 rounded-tl-md">User</th>
+                    <th class="py-3">Phone</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Date Applied</th>
+                    <th class="py-3 px-5 text-center">Role</th>
+                    <th class="py-3 px-5 text-center">Pass</th>
+                    <th class="py-3 px-5 rounded-tr-md text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody class="pt-3">
+                @foreach (var user in Model)
+                {
+                    <tr class="border border-MyPaleBlue">
+                        <td class="py-5 px-8 min-w-56">
+                            <div class="flex gap-3 items-center">
+                                <img src="~/images/avatar/@(user.Avatar ?? "maleavt.jpg")" class="w-14 h-14 rounded-full object-cover p-1 border border-MyDarkGrey">
+                                <div class="break-all">
+                                            <a asp-area="Admin" asp-controller="Home" asp-action="UserDetail" asp-route-userId="@user.Id" target="_blank" class="font-semibold text-lg hover:underline hover:text-MyBlue">@user.Name</a>
+                                    <p class="text-sm text-MyDarkGrey">@user.Email</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-5 pr-3">@user.PhoneNumber</td>
+                        <td class="py-5 pr-3">
+                            <div class="flex gap-2 items-center">
+                                <i class="fa-solid fa-circle text-xs @(user.AccountStatus == SD.StatusActive ? "text-MyGreen" : user.AccountStatus == SD.StatusSuspending ? "text-MyOrange" : "text-MyBlue")"></i>
+                                <p>@(user.AccountStatus == SD.StatusActive ? "Active" : user.AccountStatus == SD.StatusSuspending ? "Suspending" : "Pending")</p>
+                            </div>
+                        </td>
+                        <td class="py-5 pr-3">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td class="view_cvFormSubmitted py-5 text-center">@((await UserManager.GetRolesAsync(user)).Contains(SD.Role_Employer) ? "Employer" : "Job Seeker")</td>
+                        <td>
+                            <div class="flex justify-center">
+                                <button data-id="@user.Id" class="open_resetPassForm btn_resetPass hover:underline text-MyBlue">Reset</button>
+                            </div>
+                        </td>
+                        <td class="text-xs">
+                            <div class="flex justify-center">
+                                <button data-id="@user.Id" class="open_statusForm btn_modifyUser border border-MyBlue bg-MyPaleBlue py-2 px-3 rounded-lg hover:bg-MyBlue hover:text-white">Change</button>
+                            </div>
+                        </td>
+                </tr> 
+                }
+            </tbody>
+        </table>
+        </div>
+
+            <div class="text-sm flex justify-center gap-5 mt-3 text-MyBlue ml-auto mt-7">
+                    <a class="flex items-center gap-2">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <p class="hover:underline">Previous</p>
+                    </a>
+                    <a class="flex items-center gap-2">
+                        <p class="hover:underline">Next</p>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+            </div>
+
+
+    </div>
+
+    <!-- Modify Status -->
+    <div class="statusForm hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+            <div class="bg-white mx-auto w-1/2 lg:w-1/4 h-fit rounded-lg mt-28">
+            <div class="flex gap-4 items-center justify-between px-5 py-3">
+                <p class="text-MyBlue text-lg font-semibold">Status Modification</p>
+                <button class="close_statusForm text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyBlue"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+            <form method="post" asp-controller="Home" asp-action="StatusChange" id="form_modifyUser" class="px-5 py-3">
+                <input name="userId" id="id_modifyUser" type="text" hidden/>
+                <select name="status" id="" class="w-full custom-select p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleBlue focus:outline-MyBlue">
+                    <option value="@SD.StatusActive">Activate</option>
+                    <option value="@SD.StatusSuspending">Suspend</option>
+                    <option value="Delete">Delete</option>
+                </select>
+                <div class="flex gap-2 justify-end mt-6">
+                    <button type="button" class="cancel_statusForm rounded-lg border border-MyBlue bg-MyPaleBlue py-2 px-5">Cancel</button>
+                    <button type="submit" class="border border-MyBlue bg-MyBlue text-white rounded-lg hover:bg-MyPaleBlue hover:text-MyBlue py-2 px-5">Change</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Reset Password Form -->
+        <div class="resetPassForm hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+            <div class="bg-white mx-auto w-1/2 lg:w-1/4 h-fit rounded-lg mt-28">
+                <div class="flex gap-4 items-center justify-between px-5 py-3">
+                    <p class="text-MyBlue text-lg font-semibold">Password Reset</p>
+                    <button class="close_resetPassForm text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyBlue"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+                <!-- Password requirements note -->
+                <form method="post" asp-controller="Home" asp-action="ResetPassword" id="form_resetPassForm" class="px-5 py-3">
+                    <input name="userId" id="id_resetPass" type="text" hidden/>
+                    <input type="text" name="newPassword" value="" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleBlue focus:outline-MyBlue" placeholder="Enter a new password" />
+                    <div class="text-sm text-MyDarkGrey mt-2">
+                        <ul>
+                            <li>At least 8 characters long</li>
+                            <li>Contain at least one uppercase letter</li>
+                            <li>Contain at least one lowercase letter</li>
+                            <li>Contain at least one numeric digit</li>
+                            <li>Contain at least one special character</li>
+                        </ul>
+                    </div>
+                    <div class="flex gap-2 flex-wrap justify-end mt-6">
+                        <button type="button" class="cancel_resetPassForm rounded-lg border border-MyBlue bg-MyPaleBlue py-2 px-5">Cancel</button>
+                        <button type="submit" class="border border-MyBlue bg-MyBlue text-white rounded-lg hover:bg-MyPaleBlue hover:text-MyBlue py-2 px-5">Change</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+    <!-- Employer Form -->
+    <div id="employerFormCreated" class="hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+        <div class="bg-white mx-auto w-11/12 md:w-3/4 xl:w-1/2 h-fit rounded-lg mt-14">
+            <div class="flex gap-4 items-center justify-between p-3">
+                <p class="text-MyBlue text-lg font-semibold">Create User</p>
+                <button for="" id="close_employerFormCreated" class="text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyBlue"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+            <form asp-controller="Home" asp-action="CreateUser" as class="px-5 pb-4">
+                <div class="py-3 text-center">
+                        <p class="font-medium">User Information Review</p>
+                        <p class="text-sm text-MyDarkGrey">Please review the user's profile details before submission</p>
+                </div>
+                <div class="h-0.5 w-full bg-MyPaleGrey"></div>
+                <div class="py-4">
+                    <p class="font-medium">General Info</p>
+                        <p class="text-sm text-MyDarkGrey">Please review the user's information carefully</p>
+                    <div class="flex flex-col gap-4 mt-3">
+                        <div class="flex flex-wrap sm:flex-nowrap gap-4">
+                            <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3">
+                                <p class="text-xs text-MyDarkGrey">Full name <span class="text-red-600">*</span></p>
+                                <input name="fullname" type="text" class="w-full outline-none text-sm font-medium" placeholder="Nguyen Van A">
+                            </div>
+                            <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3">
+                                <p class="text-xs text-MyDarkGrey">Phone number</p>
+                                <input name="phone" type="text" class="w-full outline-none text-sm font-medium" placeholder="000 000 0000">
+                            </div>
+                        </div>
+                        <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3">
+                            <p class="text-xs text-MyDarkGrey">Gmail <span class="text-red-600">*</span></p>
+                            <input name="email" type="text" class="w-full outline-none text-sm font-medium" placeholder="nguyenvana@gmail.com">
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+                <div class="py-4">
+                    <p class="font-medium">Company Info</p>
+                        <p class="text-sm text-MyDarkGrey">Please review the user's company carefully</p>
+                    <div class="w-full border border-MyBlue rounded-sm py-1.5 px-3 mt-3">
+                        <p class="text-xs text-MyDarkGrey">Company Name</p>
+                        <input name="company" type="text" class="w-full outline-none text-sm font-medium" placeholder="NVA">
+                    </div>
+                </div>
+                <button type="submit" class="border border-MyBlue bg-MyPaleBlue rounded-md hover:bg-MyBlue hover:text-white w-full py-3 text-sm">Create</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin/home.js" asp-append-version="true"></script>
+    <script src="~/ajax/admin/home.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,319 @@
+﻿@using FPT.Utility
+@model JobSeekerProfileVM
+@{
+    ViewData["Title"] = "Profile";
+}
+<div class="px-6 md:px-16 bg-MyVeryPaleGrey min-h-screen pb-20">
+
+    <div class="grid grid-cols-1 sm:grid-cols-8 gap-6 py-7">
+        <div class="col-span-4 lg:col-span-3 xl:col-span-2">
+            <div class="bg-white min-w-44-white p-3 border-t-4 border-MyOrange">
+                <div class="flex gap-3 items-center">
+                    <div class="border border-MyGrey p-1 rounded-full">
+                        <img src="~/images/avatar/@(Model.JobSeeker.Avatar ?? "maleavt.jpg")" alt="" class="w-20 h-20 rounded-full object-cover">
+                    </div>
+                    <div>
+                        <p class="font-medium text-lg">@Model.JobSeeker.Name</p>
+                        <p class="text-sm text-MyDarkGrey">Currently finding a job</p>
+                    </div>
+
+                </div>
+                <p class="text-sm leading-6 mt-2 mb-5">
+                    "Hey @Model.JobSeeker.Name, dive into job opportunities, connect with employers, and propel your career forward with us"
+                </p>
+                <ul class="bg-MyPaleOrange py-2 px-3 text-sm">
+                    <li class="flex items-center py-3">
+                        <span>Status</span>
+                        <span class="ml-auto">
+                            <span class="bg-MyOrange py-1 px-2 rounded text-white text-sm">Active</span>
+                        </span>
+                    </li>
+                    <li class="flex items-center py-3">
+                        <span>Member since</span>
+                        <span class="ml-auto">@Model.JobSeeker.CreatedAt.ToString("MMM dd, yyyy")</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-white p-5 pb-8 mt-5">
+                <p class="text-lg font-bold text-MyOrange mb-5">Social accounts</p>
+                <div class="flex flex-col gap-4 text-sm">
+                    <div class="flex gap-3 items-center">
+                        <div class="w-8 flex justify-center">
+                            <i class="text-2xl text-MyOrange fa-brands fa-facebook-f"></i>
+                        </div>
+                        <div class="w-full">
+                            <p class="font-semibold">Facebook account</p>
+                            <a href="www.facbook.com/bminh" class="text-MyBlue text-xs underline w-full">www.facbook.com/bminh</a>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <div class="w-8 flex justify-center">
+                            <i class="text-2xl text-MyOrange fa-brands fa-linkedin-in"></i>
+                        </div>
+                        <div class="w-full">
+                            <p class="font-semibold">Linkedin account</p>
+                            <a href="www.facbook.com/bminh" class="text-MyBlue text-xs underline w-full">www.facbook.com/bminh</a>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <div class="w-8 flex justify-center">
+                            <i class="text-2xl text-MyOrange fa-brands fa-twitter"></i>
+                        </div>
+                        <div class="w-full">
+                            <p class="font-semibold">Twitter account</p>
+                            <a href="www.facbook.com/bminh" class="text-MyBlue text-xs underline w-full">www.facbook.com/bminh</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-4 lg:col-span-5 xl:col-span-6">
+            <div class="flex gap-2 text-sm">
+                <button id="profileBtn" class="btnOrange active bg-white py-2 px-4 border rounded-md border-MyGrey hover:border-MyOrange hover:bg-MyPaleOrange">Profile</button>
+                <button id="manageCvBtn" class="btnOrange bg-white py-2 px-4 border rounded-md border-MyGrey hover:border-MyOrange hover:bg-MyPaleOrange">Manage CVs</button>
+            </div>
+            <div id="Profile_section" class="mt-3">
+                <form asp-controller="Profile" asp-action="UpdateInfo" id="form_jobseekerInfo" class="bg-white rounded-md p-6">
+                    <p class="font-bold text-xl mb-5">General Information</p>
+                    <p class="font-semibold mb-1">About me</p>
+                    <textarea asp-for="JobSeekerDetail.AboutMe" id="jobseeker_about" name="aboutMe" rows="6" class="w-full outline-MyOrange p-2 bg-MyVeryPaleGrey border border-MyGrey focus:bg-MyPaleOrange" disabled></textarea>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-7">
+                        <div>
+                            <p class="font-medium mb-2">Full Name</p>
+                            <input asp-for="JobSeeker.Name" id="jobseeker_name" name="fullname" type="text" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" disabled>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-2">Email Address</p>
+                            <input asp-for="JobSeeker.Email" type="text" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" disabled readonly>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-2">Phone number</p>
+                            <input asp-for="JobSeeker.PhoneNumber" id="jobseeker_phone" name="phone" type="tel" pattern="\d{10}" title="Format as 10 numbers" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" disabled>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-2">Date Of Birth</p>
+                            <input asp-for="JobSeekerDetail.DateOfBirth" id="jobseeker_dateOfBirth" name="dateOfBirth" type="date" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" disabled>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-2">Gender</p>
+                            <select asp-for="JobSeekerDetail.Gender" name="gender" id="jobseeker_gender" class="w-full custom-select p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" disabled>
+                                <option value="" disabled selected>--Select Gender--</option>
+                                <option value="Male" selected="@(Model.JobSeekerDetail?.Gender == "Male")">Male</option>
+                                <option value="Female" selected="@(Model.JobSeekerDetail?.Gender == "Female")">Female</option>
+                                <option value="Others" selected="@(Model.JobSeekerDetail?.Gender == "Others")">Others</option>
+                            </select>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-2">Address</p>
+                            <input asp-for="JobSeekerDetail.Address" type="text" name="address" id="jobseeker_address" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" disabled>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-8 justify-end text-sm">
+                        <button class="btn py-2 px-4" type="submit" id="btn_updateInfo">Update</button>
+                        <button class="bg-MyPaleOrange border border-MyOrange rounded-lg text-MyOrange py-2 px-4" id="btn_cancelInfo" type="button">Cancel</button>
+                    </div>
+                </form>
+                <div class="bg-white rounded-md mt-4">
+                    <div class="flex items-center justify-between p-6">
+                        <div>
+                            <p class="font-bold text-xl mb-1">Password</p>
+                            <p class="text-MyDarkGrey">Introduce your strengths and years of experience</p>
+                        </div>
+                        <label for="passwordReset" class="hover:cursor-pointer"><i class="text-2xl text-MyOrange fa-regular fa-pen-to-square"></i></label>
+                    </div>
+                    <input type="checkbox" id="passwordReset" hidden>
+                    <div class="h-0.5 w-full bg-MyPaleGrey"></div>
+                    <form id="form_resetPassword" class="passwordReset hidden p-6">
+                        <div class="flex flex-wrap gap-6">
+                            <div class="w-full">
+                                <p class="font-medium mb-2">Old Password</p>
+                                <input disabled id="old_resetPassword" type="text" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange">
+                            </div>
+                            <div class="flex w-full gap-6">
+                                <div class="w-full">
+                                    <p class="font-medium mb-2">New Password</p>
+                                    <input disabled id="new_resetPassword" type="text" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange">
+                                </div>
+                                <div class="w-full">
+                                    <p class="font-medium mb-2">Confirm New Password</p>
+                                    <input disabled id="confirm_resetPassword" type="text" class="w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange">
+                                </div>
+                            </div>
+                        </div>
+                        <p id="message_resetPassword" class="text-red-600 mt-4 text-sm"></p>
+                        <div class="text-sm text-MyDarkGrey mt-2">
+                            <ul class="list-disc ml-5">
+                                <li>At least 8 characters long</li>
+                                <li>Contain at least one uppercase letter</li>
+                                <li>Contain at least one lowercase letter</li>
+                                <li>Contain at least one numeric digit</li>
+                                <li>Contain at least one special character</li>
+                            </ul>
+                        </div>
+                        <div class="flex gap-3 mt-8 justify-end text-sm">
+                            <button class="btn py-2 px-4" type="submit" id="btn_resetPassword">Update</button>
+                            <button id="btn_cancelResetPassword" class="bg-MyPaleOrange border border-MyOrange rounded-lg py-2 px-4" type="button">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white rounded-md mt-4">
+                    <div class="flex items-center justify-between p-6">
+                        <div>
+                            <p class="font-bold text-xl mb-1">Social Links</p>
+                            <p class="text-MyDarkGrey">Introduce your strengths and years of experience</p>
+                        </div>
+                        <label for="socialLink" class="hover:cursor-pointer"><i class="text-2xl text-MyOrange fa-regular fa-pen-to-square"></i></label>
+                    </div>
+                    <input type="checkbox" id="socialLink" hidden>
+                    <div class="h-0.5 w-full bg-MyPaleGrey"></div>
+                    <div class="socialLink hidden p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="w-full">
+                                <p class="font-medium mb-2">Company Website</p>
+                                <div class="relative">
+                                    <div class="absolute text-3xl text-MyOrange h-full flex items-center left-3">
+                                        <i class="fa-solid fa-square-share-nodes"></i>
+                                    </div>
+                                    <input type="text" class="pl-12 w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" value="minhbee203@gmail.com">
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <p class="font-medium mb-2">Facebook</p>
+                                <div class="relative">
+                                    <div class="absolute text-3xl text-MyOrange h-full flex items-center left-3">
+                                        <i class="fa-brands fa-square-facebook"></i>
+                                    </div>
+                                    <input type="text" class="pl-12 w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" value="minhbee203@gmail.com">
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <p class="font-medium mb-2">Twitter</p>
+                                <div class="relative">
+                                    <div class="absolute text-3xl text-MyOrange h-full flex items-center left-3">
+                                        <i class="fa-brands fa-square-twitter"></i>
+                                    </div>
+                                    <input type="text" class="pl-12 w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" value="minhbee203@gmail.com">
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <p class="font-medium mb-2">Youtube</p>
+                                <div class="relative">
+                                    <div class="absolute text-3xl text-MyOrange h-full flex items-center left-3">
+                                        <i class="fa-brands fa-square-youtube"></i>
+                                    </div>
+                                    <input type="text" class="pl-12 w-full p-3 rounded-md border border-MyGrey bg-MyVeryPaleGrey focus:bg-MyPaleOrange focus:outline-MyOrange" value="minhbee203@gmail.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-8 justify-end text-sm">
+                            <button class="btn py-2 px-4" type="submit">Update</button>
+                            <button class="bg-MyPaleOrange border border-MyOrange rounded-lg py-2 px-4" type="submit">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-md mt-4">
+                    <div class="flex items-center justify-between p-6">
+                        <div>
+                            <p class="font-bold text-xl mb-1">Skills</p>
+                            <p class="text-MyDarkGrey">Introduce your strengths and years of experience</p>
+                        </div>
+                        <label for="educationInfo" class="hover:cursor-pointer"><i class="text-2xl text-MyOrange fa-regular fa-pen-to-square"></i></label>
+                    </div>
+                    <input type="checkbox" id="educationInfo" hidden>
+                    <div class="h-0.5 w-full bg-MyPaleGrey"></div>
+                    <div class="educationInfo hidden p-6">
+                        <ul class="text-sm flex flex-wrap gap-2 mb-5">
+                            <li class="rounded-full px-3 py-2 shadow-normal w-fit">.NET</li>
+                            <li class="rounded-full px-3 py-2 shadow-normal w-fit">Team working</li>
+                            <li class="rounded-full px-3 py-2 shadow-normal w-fit">React JS</li>
+                            <li class="rounded-full px-3 py-2 shadow-normal w-fit">React JS</li>
+                            <li class="rounded-full px-3 py-2 shadow-normal w-fit">React JS</li>
+                        </ul>
+                        <input type="text" placeholder="Type your skill" class="bg-MyPaleOrange outline-MyOrange w-1/2 xl:w-1/3 border border-MyOrange p-2 rounded-md text-sm">
+                        <button type="submit" class="btn py-2 px-3 text-sm"><i class="fa-solid fa-circle-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div hidden id="ManageCV_section" class="mt-3">
+                <div class="bg-white rounded-md p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead class="text-left text-MyOrange bg-MyPaleOrange">
+                                <tr class="">
+                                    <th class="p-3 rounded-tl-md">Company</th>
+                                    <th class="p-3">Job Title</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 rounded-tr-md">Response</th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                @foreach(var cv in Model.ApplicantCVsList)
+                                {
+                                    <tr class="border border-MyPaleOrange">
+                                        <td class="p-3 min-w-56">
+                                            <div class="flex gap-3 items-center">
+                                                <img src="~/images/avatar/@(cv.Job.Company.Logo ?? "maleavt.jpg")" alt="" class="w-12 h-12 rounded-full object-cover">
+                                                <div class="break-all">
+                                                    <p class="font-medium">@cv.Job.Company.Name</p>
+                                                    <p class="text-xs">@cv.Job.Employer.Email</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3">@cv.Job.Title</td>
+                                        <td class="p-3">
+                                            <div class="flex gap-2 items-center">
+                                                <i class="fa-solid fa-circle text-xs @(cv.CVStatus == SD.StatusPending ? "text-MyOrange" : "text-MyGreen")"></i>
+                                                <p>@(cv.CVStatus == SD.StatusPending ? "Pending" : "Responded")</p>
+                                            </div>
+                                        </td>
+                                        <td data-id="@cv.Id" class="p-3 open_cvFormSubmitted hover:cursor-pointer text-MyBlue underline">View</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- CV Form -->
+    <div id="cvFormSubmitted" class="hidden absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 z-10">
+        <div class="bg-white mx-auto w-11/12 md:w-3/4 xl:w-1/2 h-fit rounded-lg mt-14">
+            <div class="flex gap-4 items-center justify-between p-3">
+                <p class="text-MyOrange text-lg font-semibold">Responded Application</p>
+                <button for="" id="close_cvFormSubmitted" class="text-2xl text-MyDarkGrey hover:cursor-pointer hover:text-MyOrange"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+            <div class="px-5 pb-4">
+                <input hidden name="name" value="" id="applicantCV_id" />
+                <div class="py-4">
+                    <p class="font-medium">Resume</p>
+                    <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                    <a href="" target="_blank" id="applicantCV_file" class="font-semibold flex gap-1 items-center mt-3 text-MyOrange text-sm">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span class="underline"> Download Resume</span>
+                    </a>
+                </div>
+                <div class="w-full h-0.5 bg-MyVeryPaleGrey"></div>
+                <div>
+                    <div class="pt-4">
+                        <p class="font-medium">Response</p>
+                        <p class="text-sm text-MyDarkGrey">You should verify your information correcly</p>
+                        <textarea readonly name="responseMessage" id="applicantCV_response" rows="5" class="resize-none p-2 outline-MyOrange text-sm w-full border border-MyOrange rounded-md mt-3"></textarea>
+                    </div>
+                    <p id="responseMessage_errorMessage" class="text-center text-red-600 my-2 text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/jobseeker/profile.js" asp-append-version="true"></script>
+    <script src="~/ajax/jobseeker/profile.js" asp-append-version="true"></script>
+}
+

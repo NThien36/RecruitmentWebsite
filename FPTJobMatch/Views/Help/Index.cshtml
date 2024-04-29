@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model HelpPageVM
+@{
+    ViewData["Title"] = "Help Center";
+}
+
+<div class="fixed z-10 bottom-20 right-6 flex items-end gap-3">
+    <div id="chat_box" class="hidden">
+        <div class="bg-white border border-MyGrey h-[500px] w-96 rounded-md text-sm flex flex-col">
+            <div class="px-2 py-3 flex items-center justify-between">
+                <p class="font-semibold text-MyOrange"><i id="chat_onlineIcon" class="fa-solid fa-circle text-MyGreen mr-2 hidden"></i>Chat with FPTJobMatch</p>
+                <button id="chat_end" class="text-MyOrange underline">End chat</button>
+            </div>
+            <div class="bg-MyVeryPaleGrey h-full px-2 py-3 flex flex-col-reverse overflow-y-scroll">
+                <div class="flex flex-col gap-2" id="messagesList">
+                    <p class="bg-white p-3 w-fit rounded-xl">Sender</p>
+                    <p class="bg-MyOrange text-white p-3 w-fit rounded-xl ml-auto">Receiver</p>
+                    <button id="chat_start" class="py-3 px-4 rounded-full mx-auto bg-white shadow-lg">Chat now</button>
+                    <p id="chat_number" class="text-center text-xs text-MyDarkGrey"></p>
+                </div>
+            </div>
+            <div class="flex">
+                <input id="messageInput" type="text" class="w-full outline-none p-3 pr-0">
+                <button id="sendButton" class="text-base text-MyDarkGrey hover:text-MyOrange px-4"><i class="fa-regular fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+    <div id="chat_btn" title="Chat with FPTJobMatch" class="hover:cursor-pointer h-fit flex gap-2 items-center btn text-xl p-3">
+        <i class="fa-solid fa-headset"></i>
+        <p class="text-sm hidden" id="chat_text">Chat with Admin</p>
+    </div>
+</div>
+
+<div class="min-h-screen">
+
+    <div class="py-14 bg-MyGreen text-center">
+        <p class="font-bold text-white text-2xl mx-10">Hello, how can FPTJobMatch help you?</p>
+        <form asp-area="" asp-controller="Help" asp-action="Index" method="post" class="relative w-4/5 lg:w-1/2 mx-auto flex items-center mt-7">
+            <input type="text" value="@ViewBag.Keyword" name="keyword" class="py-4 pl-4 pr-20 w-full rounded-md outline-none" placeholder="Search for articles">
+            <button type="submit" class="py-3 px-4 rounded-md text-white absolute right-1 bg-MyGreen border border-MyGreen hover:bg-white hover:text-MyGreen"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+    </div>
+
+    <div class="w-3/4 mx-auto pt-8 pb-20">
+        <div class="">
+            <p class="text-xl font-semibold text-MyGreen">Categories</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-5">
+                @foreach(var type in Model.HelpTypes)
+                {
+                    <a asp-area="" asp-controller="Help" asp-action="Collections" asp-route-typeId="@type.Id" class="rounded-md border border-MyGrey hover:border-MyGreen p-6">
+                        <p class="font-medium">@type.Name</p>
+                        <p class="text-MyDarkGrey mt-1 text-sm">@type.Description</p>
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="mt-12">
+            <p class="text-xl font-semibold text-MyGreen">Frequently asked questions</p>
+            <div class="flex flex-col mt-5">
+                @foreach(var article in Model.HelpArticles)
+                {
+                    <a asp-area="" asp-controller="Help" asp-action="Article" asp-route-articleId="@article.Id" target="_blank" class="flex justify-between items-center gap-2 p-4 border-b border-MyPaleGreen hover:bg-MyPaleGreen rounded-md">
+                        <p>@article.Title</p>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="mx-6 md:mx-16 py-10 my-24 bg-MyPaleGreen rounded-md text-MyGreen border border-MyGreen">
+    <p class="text-lg font-medium text-center">Do you want to find more information?</p>
+    <div class="flex gap-5 flex-wrap justify-center text-sm mt-4">
+        <div class="flex items-center gap-3 p-3 rounded-md border border-MyGreen w-64 hover:bg-MyGreen hover:text-MyPaleGreen">
+            <div class="border border-MyGreen rounded-full py-2 px-3">
+                <i class="fa-solid fa-phone"></i>
+            </div>
+            <a href="tel:+84706162561" class="break-all">0706162561</a>
+        </div>
+        <div class="flex items-center gap-3 p-3 rounded-md border border-MyGreen w-64 hover:bg-MyGreen hover:text-MyPaleGreen">
+            <div class="border border-MyGreen rounded-full py-2 px-3">
+                <i class="fa-solid fa-at"></i>
+            </div>
+            <a href="mailto:minhbee203@gmail.com" class="break-all">minhbee203@gmail.com</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}

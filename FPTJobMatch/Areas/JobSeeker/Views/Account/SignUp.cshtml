@@ -1,0 +1,77 @@
+﻿@model JobSeekerRegisterVM
+
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
+<div class="min-h-screen bg-cover bg-fixed bg-black w-full py-16" style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.54), transparent), url(/images/system/fpthonor.jpg);">
+    <div class="bg-white p-9 w-11/12 sm:w-fit rounded-lg mx-auto">
+        <p class="text-MyOrange font-bold text-2xl mb-1">Register</p>
+        <div class="flex gap-1 text-sm">
+            <p>Already have an account?</p>
+            <a asp-controller="Home" asp-action="SignIn" class="underline text-MyBlue">Sign In</a>
+        </div>
+        <form method="post" class="mt-6">
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2">
+                    <label asp-for="Name" class="font-semibold">Full Name</label>
+                    <input asp-for="Name" type="text" id="FullName" placeholder="Type your full name" class="border border-MyPaleGrey focus:border-MyOrange p-3 rounded-sm outline-none text-sm">
+                    <span asp-validation-for="Name" class="text-red-600 text-sm"></span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label asp-for="Email" class="font-semibold">Email Address</label>
+                    <input asp-for="Email" type="text" id="Email" placeholder="Type your gmail" class="border border-MyPaleGrey focus:border-MyOrange p-3 rounded-sm outline-none text-sm">
+                    <span asp-validation-for="Email" class="text-red-600 text-sm"></span>
+                </div>
+                <div class="flex flex-col md:flex-row gap-5">
+                    <div class="flex flex-col gap-2">
+                        <label asp-for="Password" class="font-semibold">Password</label>
+                        <input asp-for="Password" type="password" id="Password" placeholder="Type your password" class="min-w-64 border border-MyPaleGrey focus:border-MyOrange p-3 rounded-sm outline-none text-sm">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label asp-for="ConfirmPassword" class="font-semibold">Password Confirm</label>
+                        <input asp-for="ConfirmPassword" type="password" id="PasswordConfirm" placeholder="Type your password" class="min-w-64 border border-MyPaleGrey focus:border-MyOrange p-3 rounded-sm outline-none text-sm">
+                    </div>
+                </div>
+                <div class="flex flex-col mt-1">
+                    <span asp-validation-for="Password" class="text-red-600 text-sm mb-1"></span>
+                    <span asp-validation-for="ConfirmPassword" class="text-red-600 text-sm"></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 mt-3">
+                <input id="showPassword" type="checkbox" class="accent-MyOrange w-3.5 h-3.5">
+                <label for="showPassword" class="text-xs">Show password</label>
+            </div>
+            <div class="flex items-center gap-1 mt-3 mb-2">
+                <input asp-for="isPolicyAgreed" type="checkbox" class="accent-MyOrange w-3.5 h-3.5">
+                <label asp-for="isPolicyAgreed" class="text-xs">I have read and agree to your <span class="underline font-semibold">Terms of use</span> and <span class="underline font-semibold">Privacy Policy</span></label>
+            </div>
+            <span asp-validation-for="isPolicyAgreed" class="text-red-600 text-sm"></span>
+            <button type="submit" class="btn w-full py-2 mt-5">Sign Up</button>
+            <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mt-3 text-center"></div>
+        </form>
+        <div class="flex items-center gap-4 my-5">
+            <div class="bg-MyPaleGrey h-0.5 w-full"></div>
+            <p class="text-sm text-gray-400">OR</p>
+            <div class="bg-MyPaleGrey h-0.5 w-full"></div>
+        </div>
+        <div class="flex gap-3 justify-between h-10">
+            <a asp-area="" asp-controller="ExternalSignIn" asp-action="ExternalLogin" asp-route-provider="Facebook" class="flex items-center justify-center gap-2 border border-MyOrange rounded-md w-full hover:bg-MyPaleOrange">
+                <img src="~/images/system/Facebook-logo.png" alt="Facebook-logo" class="h-5">
+                <p class="text-xs">Facebook</p>
+            </a>
+            <a asp-area="" asp-controller="ExternalSignIn" asp-action="ExternalLogin" asp-route-provider="Google" class="flex items-center justify-center gap-2 border border-MyOrange rounded-md w-full hover:bg-MyPaleOrange">
+                <img src="~/images/system/Google-logo.png" alt="Google-logo" class="h-5">
+                <p class="text-xs">Google</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script src="~/js/jobseeker/account.js"></script>
+}
