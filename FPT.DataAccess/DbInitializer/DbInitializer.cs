@@ -53,9 +53,9 @@ namespace FPT.DataAccess.DbInitializer
             {
                 var adminUser = new ApplicationUser
                 {
-                    UserName = "minhbee203@gmail.com",
-                    Email = "minhbee203@gmail.com",
-                    Name = "Bui Minh",
+                    UserName = "xxxxxxxxx",
+                    Email = "xxxxxxxxx",
+                    Name = "xxxxxxxxx",
                     CreatedAt = DateTime.UtcNow,
                     AccountStatus = SD.StatusActive,
                     EmailConfirmed = true
